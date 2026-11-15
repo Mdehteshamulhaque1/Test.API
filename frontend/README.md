@@ -67,8 +67,10 @@ On Vercel:
 
 1. Import the GitHub repo. Set **Root Directory** to `frontend` and leave
    **Framework Preset** on *Other*. `vercel.json` already supplies the install
-   command, build command (`python3 build.py --out dist`), output directory,
-   clean URLs and security headers.
+   command (a virtual environment, because Vercel's Python is managed by `uv`
+   and refuses system-wide `pip install`), the build command
+   (`.venv/bin/python build.py --out dist`), output directory, clean URLs and
+   security headers.
 2. Add the environment variable `ESONE_WEB_API_URL` =
    `https://esone-api.onrender.com` (no trailing slash) for Production and
    Preview. It is baked into the pages at build time, so changing it needs a

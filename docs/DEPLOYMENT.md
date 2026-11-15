@@ -69,9 +69,10 @@ health check `/api/v1/health`, and the same variables.
 1. https://vercel.com > **Add New > Project** > import the GitHub repo.
 2. Set **Root Directory** to `frontend`. Leave **Framework Preset** as
    *Other*; `frontend/vercel.json` supplies the install command
-   (`python3 -m pip install -r requirements.txt`), the build command
-   (`python3 build.py --out dist`), the output directory, clean URLs and the
-   security headers.
+   (creates `.venv` with `uv`, falling back to `python3 -m venv`, then installs
+   `requirements.txt` into it; Vercel's system Python refuses `pip install`),
+   the build command (`.venv/bin/python build.py --out dist`), the output
+   directory, clean URLs and the security headers.
 3. Under **Environment Variables** add, for Production and Preview:
 
    | Variable | Value |
