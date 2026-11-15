@@ -1,0 +1,47 @@
+# Render Blueprint for Esone: the API on Render, database on Supabase.
+# The frontend is a static site deployed on Vercel from frontend/ (see
+# docs/DEPLOYMENT.md); it is not part of this blueprint.
+#
+#   esone-api  FastAPI in backend/. DATABASE_URL is pasted in the dashboard:
+#              Supabase *pooler* URI (host *.pooler.supabase.com, session
+#              mode, port 5432). ESONE_CORS_ORIGINS must list the Vercel
+#              production URL; ESONE_CORS_ORIGIN_REGEX allows preview URLs,
+#              e.g. ^https://esone[a-z0-9-]*\.vercel\.app$
+#
+# Variables marked `sync: false` are asked for in the Render dashboard and are
+# never stored in git.
+#
+# To host the frontend on Render instead of Vercel, add a second Python web
+# service with rootDir frontend, build `pip install -r requirements.txt`,
+# start `uvicorn esone_web.main:app --host 0.0.0.0 --port $PORT`, health
+# check /healthz and the variable ESONE_WEB_API_URL.
+
+services:
+  - type: web
+    name: esone-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn esone_api.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: ESONE_ENV
+        value: production
+      - key: ESONE_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: ESONE_CORS_ORIGINS
+        sync: false
+      - key: ESONE_CORS_ORIGIN_REGEX
+        sync: false
+      - key: ESONE_ADMIN_USERNAME
+        sync: false
+      - key: ESONE_ADMIN_EMAIL
+        sync: false
+      - key: ESONE_ADMIN_PASSWORD
+        sync: false
