@@ -8,9 +8,11 @@ Next.js, no bundler.
 | Pages | Jinja2 templates in `esone_web/templates/` (`base.html` layout, one file per page) |
 | Styling | One plain stylesheet, `esone_web/static/css/app.css` |
 | Behaviour | TypeScript in `src/`, compiled by `tsc` to browser ES modules in `esone_web/static/js/` |
-| Server | `esone_web/main.py`: routes `/`, `/login`, `/register`, `/account`, `/admin`, `/healthz`, static files, security headers |
+| Server | `esone_web/main.py`: routes `/`, `/login`, `/register`, `/chat`, `/account`, `/admin`, `/healthz`, static files, security headers |
 
-The pages talk to the Esone API (`../backend`) with `fetch`. The API origin is
+The pages talk to the Esone API (`../backend`) with `fetch`. The `/chat` page
+sends questions to the Esone API, which forwards them to the API Optimizer's
+answers pipeline (semantic Redis cache, then crawler). The API origin is
 read from `ESONE_WEB_API_URL` and injected into every page as
 `<meta name="esone-api-url">`; `src/api.ts` reads it from there. Tokens live in
 `localStorage`, with one shared refresh on 401 and a single retry.

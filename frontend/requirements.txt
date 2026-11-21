@@ -8,5 +8,3 @@ pydantic-settings==2.14.2
 pytest==9.1.1
 httpx==0.28.1
 
-# The optional Streamlit client (streamlit_app.py) has its own file:
-# pip install -r requirements-streamlit.txt

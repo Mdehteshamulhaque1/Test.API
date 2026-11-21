@@ -1,4 +1,0 @@
-# Only for the optional Streamlit client: streamlit run streamlit_app.py
-# Not used by the Vercel build or the page server.
-streamlit==1.39.0
-requests==2.31.0
