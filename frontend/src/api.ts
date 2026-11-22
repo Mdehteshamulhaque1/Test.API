@@ -459,8 +459,8 @@ export interface ChatbotReply {
 }
 
 /** POST /api/v1/chatbot (no account needed). Answers questions about the project. */
-export async function apiChatbot(message: string, history: ChatbotTurn[]): Promise<ChatbotReply> {
-  const res = await request("/api/v1/chatbot", { method: "POST", body: JSON.stringify({ message, history }) })
+export async function apiChatbot(message: string, history: ChatbotTurn[], signal?: AbortSignal): Promise<ChatbotReply> {
+  const res = await request("/api/v1/chatbot", { method: "POST", body: JSON.stringify({ message, history }), signal })
   if (!res.ok) throw new ApiError(await readErrorMessage(res), res.status)
   return res.json() as Promise<ChatbotReply>
 }

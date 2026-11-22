@@ -10,6 +10,9 @@ import { el, qs } from "./dom.js"
 const STORE_KEY = "esone.chatbot"
 const MAX_STORED = 30
 const HISTORY_SENT = 6
+/** Give up on one message after this long, so a sleeping or redeploying server never freezes the widget. */
+const REQUEST_TIMEOUT_MS = 70_000
+const SLOW_NOTICE_MS = 8_000
 const GREETING =
   "Hi! I can tell you about the API Optimizer project: what it does, how caching and rate limits work, the dashboard, the tech stack and who built it. What would you like to know?"
 
@@ -91,8 +94,13 @@ if (root) {
     input.value = ""
     const typing = bubble("assistant", "Thinking…")
     typing.classList.add("chatbot-typing")
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+    const slow = window.setTimeout(() => {
+      typing.textContent = "Waking up the server, this can take up to a minute…"
+    }, SLOW_NOTICE_MS)
     try {
-      const reply = await apiChatbot(message, history)
+      const reply = await apiChatbot(message, history, controller.signal)
       typing.remove()
       turns = [...turns, { role: "assistant", content: reply.answer }]
       saveTurns(turns)
@@ -102,9 +110,13 @@ if (root) {
       const text =
         err instanceof ApiError
           ? err.message
-          : "Could not reach the server. It may be waking up; please try again in a moment."
+          : controller.signal.aborted
+            ? "The server took too long to answer. Please send your question again."
+            : "Could not reach the server. It may be waking up; please try again in a moment."
       bubble("error", text)
     } finally {
+      window.clearTimeout(timeout)
+      window.clearTimeout(slow)
       busy = false
       send.disabled = false
       input.focus()
